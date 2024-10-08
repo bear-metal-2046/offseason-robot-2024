@@ -13,11 +13,11 @@ public class Chassis {
     private final CalibrationData<Double[]> swerveCalibration;
 
     private Chassis() {
-        swerveCalibration = new CalibrationData<>("SwerveCalibration", new Double[]{0d,0d,0d,0d});
+        swerveCalibration = new CalibrationData<>("SwerveCalibration", new Double[]{0d, 0d, 0d, 0d});
 
         Double[] angularOffsets = swerveCalibration.get();
         modules = List.of(
-                new SwerveModule(RobotMap.FRONT_LEFT_MOD, angularOffsets[0] ),
+                new SwerveModule(RobotMap.FRONT_LEFT_MOD, angularOffsets[0]),
                 new SwerveModule(RobotMap.BACK_LEFT_MOD, angularOffsets[1]),
                 new SwerveModule(RobotMap.BACK_LEFT_MOD, angularOffsets[2]),
                 new SwerveModule(RobotMap.BACK_LEFT_MOD, angularOffsets[3])
