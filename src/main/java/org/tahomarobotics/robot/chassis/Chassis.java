@@ -8,22 +8,25 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.CalibrationData;
+import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Chassis extends SubsystemBase {
+public class Chassis extends SubsystemIF {
     private static final Logger logger = LoggerFactory.getLogger(Chassis.class);
 
     private static final Chassis INSTANCE = new Chassis();
@@ -77,8 +80,18 @@ public class Chassis extends SubsystemBase {
         return INSTANCE;
     }
 
-    public SwerveModulePosition[] getSwerveModulePositions() {
-        return modules.stream().map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
+    @Override
+    public SubsystemIF initialize() {
+//        SmartDashboard.putData("AlignSwerve", AlignSwerveCommand);
+        pigeon.zeroHeading();
+
+        var gyro = getYaw();
+        var modules = getSwerveModulePositions();
+        synchronized (poseEstimator) {
+            poseEstimator.resetPosition(gyro, new SwerveDriveWheelPositions(modules), new Pose2d());
+        }
+
+        return this;
     }
 
     private void odometryThread() {
@@ -108,9 +121,38 @@ public class Chassis extends SubsystemBase {
         return moduleDeltas;
     }
 
+    // CALIBRATION
+    public void initializeCalibration() {
+        modules.forEach(SwerveModule::initCalibration);
+    }
+
+    public void finalizeCalibration() {
+        swerveCalibration.set(
+                modules.stream()
+                        .map(SwerveModule::finalizeCalibration)
+                        .toArray(Double[]::new)
+        );
+    }
+
+    public void cancelCalibration() {
+        modules.forEach(SwerveModule::cancelCalibration);
+    }
+
+    // GETTERS
+
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
+
+    public SwerveModulePosition[] getSwerveModulePositions() {
+        return modules.stream().map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
+    }
+
+    public Rotation2d getYaw() {
+        return heading;
+    }
+
+    // DRIVING
 
     public void drive(ChassisSpeeds velocity, boolean isFieldCentric) {
         if (isFieldCentric) {
@@ -157,5 +199,15 @@ public class Chassis extends SubsystemBase {
     @Override
     public void periodic() {
 
+    }
+
+    @Override
+    public double getEnergyUsed() {
+        return 0;
+    }
+
+    @Override
+    public double getTotalCurrent() {
+        return 0;
     }
 }

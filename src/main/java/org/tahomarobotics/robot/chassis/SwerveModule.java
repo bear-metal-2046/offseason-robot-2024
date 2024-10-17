@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -13,8 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.util.RobustConfigurator;
 
 import java.util.List;
+
+import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
 public class SwerveModule {
     private static final Logger logger = LoggerFactory.getLogger(SwerveModule.class);
@@ -37,7 +41,11 @@ public class SwerveModule {
     private final StatusSignal<Double> driveCurrent;
     private final StatusSignal<Double> steerCurrent;
 
+    private final RobustConfigurator configurator;
+
     public SwerveModule(RobotMap.SwerveModuleDescriptor descriptor, double angularOffset){
+        configurator = new RobustConfigurator(logger);
+
         name = descriptor.moduleName();
         translationOffset = descriptor.offset();
         this.angularOffset = angularOffset;
@@ -46,7 +54,9 @@ public class SwerveModule {
         steerMotor = new TalonFX(descriptor.steerId(), RobotConfiguration.CANBUS_NAME);
         steerEncoder = new CANcoder(descriptor.encoderId(), RobotConfiguration.CANBUS_NAME);
 
-        // TODO: configure stuff here
+        configurator.configureTalonFX(driveMotor, driveMotorConfiguration, descriptor.moduleName() + " drive motor");
+        configurator.configureTalonFX(steerMotor, steerMotorConfiguration, descriptor.encoderId(), descriptor.moduleName() + " steer motor");
+        configurator.configureCancoder(steerEncoder, encoderConfiguration, angularOffset, descriptor.moduleName() + " encoder");
 
         drivePosition = driveMotor.getPosition();
         driveVelocity = driveMotor.getVelocity();
@@ -69,21 +79,25 @@ public class SwerveModule {
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, steerEncoder);
     }
 
-    // Calibration methods
+    // CALIBRATION
 
     public void initCalibration() {
-
+        configurator.setCancoderAngularOffset(steerEncoder, 0);
+        configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Coast);
     }
 
     public double finalizeCalibration() {
-
+        angularOffset = -steerPosition.refresh().getValue();
+        configurator.setCancoderAngularOffset(steerEncoder, angularOffset);
+        configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Brake);
+        return angularOffset;
     }
 
     public void cancelCalibration() {
-
+        configurator.setCancoderAngularOffset(steerEncoder, angularOffset);
     }
 
-    // Getters
+    // GETTERS
 
     public Translation2d getTranslationOffset() {
         return translationOffset;
