@@ -8,7 +8,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ElevatorConstants {
 
-    public static final double GEAR_REDUCTION = 12d/72d * 30d/60d;
+    public static final double GEAR_REDUCTION = 12d / 72d * 30d / 60d;
     private static final double MAIN_PULLEY_CIRCUMFERENCE = 0.22742; // Meters
     public static final double SENSOR_COEFFICIENT = GEAR_REDUCTION / 2048 * MAIN_PULLEY_CIRCUMFERENCE;
     public static final double ELEVATOR_HIGH_POSE = 1.4; // Meters()
@@ -16,6 +16,7 @@ public class ElevatorConstants {
     public static final double ELEVATOR_LOW_POSE = 1.4; // Meters()
     public static final double ELEVATOR_MAX_POSE = 1.4; // Meters()
     public static final double ELEVATOR_MIN_POSE = 0.0; // Meters()
+    public static final double VELOCITY_ELIPSON = 0.005;
 
     public static final double ELEVATOR_MAX_VELOCITY = 0.0; // Meters / sec()
     public static final double ELEVATOR_MAX_ACCELERATION = 1.0; // Meters / sec^2 ()
