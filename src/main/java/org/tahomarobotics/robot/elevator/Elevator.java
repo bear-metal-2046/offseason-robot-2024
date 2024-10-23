@@ -6,6 +6,9 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.slf4j.Logger;
@@ -26,7 +29,9 @@ public class Elevator extends SubsystemIF {
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     TalonFX elevatorRight;
     TalonFX elevatorLeft;
-    private final StatusSignal<Double> elevatorPosition, elevatorVelocity, elevatorCurrent;
+    private final StatusSignal<Angle> elevatorPosition;
+    private final StatusSignal<AngularVelocity> elevatorVelocity;
+    private final StatusSignal<Current> elevatorCurrent;
 
 
     private Elevator() {
@@ -59,11 +64,11 @@ public class Elevator extends SubsystemIF {
     }
 
     public double getElevatorPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValue(elevatorPosition, elevatorVelocity);
+        return BaseStatusSignal.getLatencyCompensatedValueAsDouble(elevatorPosition,elevatorVelocity);
     }
 
     public double getElevatorVelocity() {
-        return elevatorVelocity.getValue();
+        return elevatorVelocity.getValueAsDouble();
     }
 
     public double getElevatorCurrent() {
@@ -79,17 +84,6 @@ public class Elevator extends SubsystemIF {
         elevatorRight.setControl(positionControl.withPosition(targetPosition));
     }
 
-    public void setElevatorState(ElevatorStates state) {
-        if (state != elevatorState) logger.info("Arm State Set To: " + state.name());
-        this.elevatorState = state;
-
-        switch (state) {
-            case LOW -> setElevatorPosition(ELEVATOR_LOW_POSE);
-            case MID -> setElevatorPosition(ELEVATOR_MID_POSE);
-            case HIGH -> setElevatorPosition(ELEVATOR_HIGH_POSE);
-        }
-    }
-
     public void zero() {
         boolean isDisabled = RobotState.isDisabled();
 
@@ -100,6 +94,16 @@ public class Elevator extends SubsystemIF {
             throw new RuntimeException("Uh...it didnt zero...I think you should power cycle");
         }
 
+    }
+
+    public void toHigh(){
+        elevatorState = ElevatorStates.HIGH;
+    }
+    public void toMid() {
+        elevatorState = ElevatorStates.MID;
+    }
+    public void toLow(){
+        elevatorState = ElevatorStates.LOW;
     }
 
     public void stop() {
@@ -133,6 +137,12 @@ public class Elevator extends SubsystemIF {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(elevatorPosition, elevatorVelocity, elevatorCurrent);
+
+        switch (elevatorState) {
+            case LOW -> setElevatorPosition(ELEVATOR_LOW_POSE);
+            case MID -> setElevatorPosition(ELEVATOR_MID_POSE);
+            case HIGH -> setElevatorPosition(ELEVATOR_HIGH_POSE);
+        }
     }
 
 
