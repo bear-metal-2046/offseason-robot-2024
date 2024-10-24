@@ -6,6 +6,8 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 
@@ -13,8 +15,8 @@ import java.util.List;
 
 public class Gyro {
     protected final Pigeon2 pigeon = new Pigeon2(RobotMap.PIGEON);
-    private final StatusSignal<Double> yaw = pigeon.getYaw();
-    private final StatusSignal<Double> yawVelocity = pigeon.getAngularVelocityZWorld();
+    private final StatusSignal<Angle> yaw = pigeon.getYaw();
+    private final StatusSignal<AngularVelocity> yawVelocity = pigeon.getAngularVelocityZWorld();
 
     public record ValidYaw(Rotation2d yaw, boolean valid) {}
 
@@ -35,7 +37,7 @@ public class Gyro {
 
     ValidYaw getYaw() {
         boolean valid = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
-        return new ValidYaw(Rotation2d.fromDegrees(BaseStatusSignal.getLatencyCompensatedValue(yaw, yawVelocity)), valid);
+        return new ValidYaw(Rotation2d.fromDegrees(BaseStatusSignal.getLatencyCompensatedValueAsDouble(yaw, yawVelocity)), valid);
     }
 
     List<BaseStatusSignal> getStatusSignals() {

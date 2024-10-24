@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
@@ -88,7 +87,10 @@ public class Chassis extends SubsystemIF {
         var gyro = getYaw();
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {
-            poseEstimator.resetPosition(gyro, new SwerveDriveWheelPositions(modules), new Pose2d());
+            //changed SwerveDriveWheelPositions to passing in an array of the module positions
+            //because SwerveDriveWheelPositions was just deleted in 2025.1.1 beta
+            //if that broke something blame me :(
+            poseEstimator.resetPosition(gyro, modules, new Pose2d());
         }
 
         return this;

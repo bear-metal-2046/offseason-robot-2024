@@ -10,6 +10,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
@@ -18,6 +23,7 @@ import org.tahomarobotics.robot.util.RobustConfigurator;
 
 import java.util.List;
 
+import static edu.wpi.first.units.BaseUnits.AngleUnit;
 import static org.tahomarobotics.robot.chassis.ChassisConstants.*;
 
 public class SwerveModule {
@@ -33,13 +39,13 @@ public class SwerveModule {
 
     private SwerveModuleState targetState = new SwerveModuleState();
 
-    private final StatusSignal<Double> steerPosition;
-    private final StatusSignal<Double> steerVelocity;
-    private final StatusSignal<Double> drivePosition;
-    private final StatusSignal<Double> driveVelocity;
-    private final StatusSignal<Double> driveAcceleration;
-    private final StatusSignal<Double> driveCurrent;
-    private final StatusSignal<Double> steerCurrent;
+    private final StatusSignal<Angle> steerPosition;
+    private final StatusSignal<AngularVelocity> steerVelocity;
+    private final StatusSignal<Angle> drivePosition;
+    private final StatusSignal<AngularVelocity> driveVelocity;
+    private final StatusSignal<AngularAcceleration> driveAcceleration;
+    private final StatusSignal<Current> driveCurrent;
+    private final StatusSignal<Current> steerCurrent;
 
     private final RobustConfigurator configurator;
 
@@ -87,7 +93,7 @@ public class SwerveModule {
     }
 
     public double finalizeCalibration() {
-        angularOffset = -steerPosition.refresh().getValue();
+        angularOffset = -steerPosition.refresh().getValueAsDouble();
         configurator.setCancoderAngularOffset(steerEncoder, angularOffset);
         configurator.setMotorNeutralMode(steerMotor, NeutralModeValue.Brake);
         return angularOffset;
