@@ -63,20 +63,12 @@ public class Elevator extends SubsystemIF {
         LOW
     }
 
-    public double getElevatorPosition() {
-        return BaseStatusSignal.getLatencyCompensatedValueAsDouble(elevatorPosition,elevatorVelocity);
+    public void setElevatorPosition(){
+        elevatorRight.setControl(positionControl.withPosition(MathUtil.clamp(targetPosition, ELEVATOR_MAX_POSE, ELEVATOR_MIN_POSE)));
     }
 
     public double getElevatorVelocity() {
         return elevatorVelocity.getValueAsDouble();
-    }
-
-    public double getElevatorCurrent() {
-        return elevatorCurrent.getValueAsDouble();
-    }
-
-    public ElevatorStates getElevatorState() {
-        return elevatorState;
     }
 
     public void setElevatorPosition(double position) {
@@ -143,6 +135,7 @@ public class Elevator extends SubsystemIF {
             case MID -> setElevatorPosition(ELEVATOR_MID_POSE);
             case HIGH -> setElevatorPosition(ELEVATOR_HIGH_POSE);
         }
+        setElevatorPosition();
     }
 
 

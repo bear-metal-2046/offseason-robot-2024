@@ -12,29 +12,15 @@ public class ElevatorConstants {
     private static final double MAIN_PULLEY_CIRCUMFERENCE = 0.22742; // Meters
     public static final double SENSOR_COEFFICIENT = GEAR_REDUCTION / 2048 * MAIN_PULLEY_CIRCUMFERENCE;
     public static final double ELEVATOR_HIGH_POSE = 1.4; // Meters()
-    public static final double ELEVATOR_MID_POSE = 1.4; // Meters()
-    public static final double ELEVATOR_LOW_POSE = 1.4; // Meters()
+    public static final double ELEVATOR_MID_POSE = 1.4/2; // Meters()
+    public static final double ELEVATOR_LOW_POSE = 0.2; // Meters()
     public static final double ELEVATOR_MAX_POSE = 1.4; // Meters()
     public static final double ELEVATOR_MIN_POSE = 0.0; // Meters()
     public static final double VELOCITY_ELIPSON = 0.005;
 
     public static final double ELEVATOR_MAX_VELOCITY = 0.0; // Meters / sec()
     public static final double ELEVATOR_MAX_ACCELERATION = 1.0; // Meters / sec^2 ()
-//    private static final double REFERENCE_VOLTAGE = 12;
-//    private static final double VELOCITY_CURRENT_LIMIT = 80; // amps
-//    private static final double ACCEL_CURRENT_LIMIT = 60; // amps
-//
-//
-//    // Feed Forward
-//    public static final double S_VOLTS = 0.0; // Static Gain
-//    public static final double COS_VOLTS = 0.0; // Gravity Gain
-//    public static final double V_VOLT_SECOND_PER_RAD = 0.0; // Velocity gain;
-//    public static final double A_VOLT_SECOND_SQUARED_PER_RAD = 0.0; // Acceleration Gain
-//
-//    // Feed Back
-//    public static final double kP = 1.0;
-//    public static final double kI = 0.0;
-//    public static final double kD = 0.0;
+
 
     static final TalonFXConfiguration elevatorConfig = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()

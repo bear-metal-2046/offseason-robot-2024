@@ -26,7 +26,7 @@ public class ElevatorZeroCommand extends Command {
     @Override
     public void execute() {
         if (zeroed || Math.abs(elevator.getElevatorVelocity()) <
-                ElevatorConstants.VELOCITY_ELIPSON && timer.hasElapsed(1.0)){
+                ElevatorConstants.VELOCITY_ELIPSON && timer.hasElapsed(5.0)){
             elevator.stop();
             zeroed = true;
         }
