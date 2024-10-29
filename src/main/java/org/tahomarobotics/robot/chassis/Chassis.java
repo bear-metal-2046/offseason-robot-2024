@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -9,13 +10,17 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.CalibrationData;
@@ -34,6 +39,12 @@ public class Chassis extends SubsystemIF {
     private final Gyro pigeon = new Gyro();
 
     private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
+    private ChassisSpeeds currentSpeeds = new ChassisSpeeds();
+    private ChassisSpeeds currentAcceleration = new ChassisSpeeds();
+    private final LinearFilter xAccelFilter = LinearFilter.movingAverage(3),
+            yAccelFilter = LinearFilter.movingAverage(3),
+            rotAccelFilter = LinearFilter.movingAverage(3);
+
     private final CalibrationData<Double[]> swerveCalibration;
     private final SwerveDriveKinematics kinematics;
     private final SwerveDrivePoseEstimator poseEstimator;
@@ -42,6 +53,8 @@ public class Chassis extends SubsystemIF {
     private boolean isFieldCentric = true;
     private Rotation2d heading = new Rotation2d();
     private SwerveModulePosition[] lastModulePosition;
+
+    private final SwerveDriveLimiter accelerationLimiter;
 
     private Chassis() {
         // Read calibration from rio
@@ -70,6 +83,8 @@ public class Chassis extends SubsystemIF {
                 getSwerveModulePositions(),
                 new Pose2d(0.0, 0.0, new Rotation2d(0.0))
         );
+
+        accelerationLimiter = new SwerveDriveLimiter(getSwerveModuleStates(), ChassisConstants.ACCELERATION_LIMIT);
 
         odometryThread = new Thread(this::odometryThread);
         odometryThread.start();
@@ -150,6 +165,10 @@ public class Chassis extends SubsystemIF {
         return modules.stream().map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
     }
 
+    private SwerveModuleState[] getSwerveModuleStates() {
+        return modules.stream().map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
+    }
+
     public Rotation2d getYaw() {
         return heading;
     }
@@ -169,6 +188,12 @@ public class Chassis extends SubsystemIF {
         }
 
         drive(velocity, isFieldCentric);
+    }
+
+    private void setSwerveStates(SwerveModuleState[] states) {
+        for (int i = 0; i < states.length; i++) {
+            modules.get(i).setDesiredState(states[i]);
+        }
     }
 
     private void updatePosition() {
@@ -200,7 +225,28 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public void periodic() {
+        modules.forEach(SwerveModule::periodic);
 
+        Pose2d pose = getPose();
+
+        ChassisSpeeds newChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
+        ChassisSpeeds unfilteredAcceleration = newChassisSpeeds.minus(currentSpeeds);
+        currentAcceleration = new ChassisSpeeds(
+            xAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.vxMetersPerSecond)),
+            yAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.vyMetersPerSecond)),
+            rotAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.omegaRadiansPerSecond))
+        );
+        currentSpeeds = newChassisSpeeds;
+
+        fieldPose.setRobotPose(pose);
+        SmartDashboard.putData(fieldPose);
+
+        if (RobotState.isEnabled()) {
+            var swerveModuleStates = kinematics.toSwerveModuleStates(targetSpeeds);
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ChassisConstants.MAX_VELOCITY);
+            swerveModuleStates = accelerationLimiter.calculate(swerveModuleStates);
+            setSwerveStates(swerveModuleStates);
+        }
     }
 
     @Override
