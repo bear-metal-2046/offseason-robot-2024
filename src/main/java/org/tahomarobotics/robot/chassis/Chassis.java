@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
 import org.tahomarobotics.robot.util.CalibrationData;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -41,7 +42,8 @@ public class Chassis extends SubsystemIF {
     private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
     private ChassisSpeeds currentSpeeds = new ChassisSpeeds();
     private ChassisSpeeds currentAcceleration = new ChassisSpeeds();
-    private final LinearFilter xAccelFilter = LinearFilter.movingAverage(3),
+    private final LinearFilter
+            xAccelFilter = LinearFilter.movingAverage(3),
             yAccelFilter = LinearFilter.movingAverage(3),
             rotAccelFilter = LinearFilter.movingAverage(3);
 
@@ -96,7 +98,7 @@ public class Chassis extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-//        SmartDashboard.putData("AlignSwerve", AlignSwerveCommand);
+        SmartDashboard.putData("AlignSwerve", new AlignSwerveCommand());
         pigeon.zeroHeading();
 
         var gyro = getYaw();

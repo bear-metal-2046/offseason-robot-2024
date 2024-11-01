@@ -32,8 +32,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        subsystems.add(OI.getInstance());
-        subsystems.add(Chassis.getInstance());
+        subsystems.add(OI.getInstance().initialize());
+        subsystems.add(Chassis.getInstance().initialize());
     }
     
     
