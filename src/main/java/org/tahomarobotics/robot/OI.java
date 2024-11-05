@@ -1,6 +1,7 @@
 package org.tahomarobotics.robot;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
@@ -27,7 +28,7 @@ public class OI extends SubsystemIF {
     }
 
     public void setDriveControls() {
-
+        driveController.a().onTrue(Commands.runOnce(Chassis.getInstance()::zeroHeading));
     }
 
     public void setDefaultCommands() {

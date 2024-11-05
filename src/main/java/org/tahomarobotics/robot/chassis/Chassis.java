@@ -198,6 +198,10 @@ public class Chassis extends SubsystemIF {
         }
     }
 
+    public void zeroHeading() {
+        pigeon.zeroHeading();
+    }
+
     private void updatePosition() {
         SwerveModulePosition[] positions;
 
