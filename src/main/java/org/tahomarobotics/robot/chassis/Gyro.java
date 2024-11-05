@@ -14,7 +14,7 @@ import org.tahomarobotics.robot.RobotMap;
 import java.util.List;
 
 public class Gyro {
-    protected final Pigeon2 pigeon = new Pigeon2(RobotMap.PIGEON);
+    protected final Pigeon2 pigeon = new Pigeon2(RobotMap.PIGEON, RobotConfiguration.CANBUS_NAME);
     private final StatusSignal<Angle> yaw = pigeon.getYaw();
     private final StatusSignal<AngularVelocity> yawVelocity = pigeon.getAngularVelocityZWorld();
 
