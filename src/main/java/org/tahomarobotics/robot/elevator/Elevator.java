@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.elevator.commands.ElevatorMoveCommand;
 import org.tahomarobotics.robot.elevator.commands.ElevatorZeroCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
@@ -27,7 +28,7 @@ public class Elevator extends SubsystemIF {
 
     public static final Logger logger = LoggerFactory.getLogger(Elevator.class);
     private static final Elevator INSTANCE = new Elevator();
-    private ElevatorStates elevatorState = ElevatorStates.LOW;
+    public ElevatorStates elevatorState = ElevatorStates.LOW;
     private double targetPosition;
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     TalonFX elevatorRight;
@@ -73,8 +74,8 @@ public class Elevator extends SubsystemIF {
         return elevatorVelocity.getValueAsDouble();
     }
 
-    public void setElevatorPosition() {
-        targetPosition = MathUtil.clamp(targetPosition, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
+    public void setElevatorPosition(double position) {
+        targetPosition = MathUtil.clamp(position, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
         elevatorRight.setControl(positionControl.withPosition(targetPosition));
     }
 
@@ -135,13 +136,6 @@ public class Elevator extends SubsystemIF {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(elevatorPosition, elevatorVelocity, elevatorCurrent);
-
-        switch (elevatorState) {
-            case LOW -> targetPosition = ELEVATOR_LOW_POSE;
-            case MID -> targetPosition = ELEVATOR_MID_POSE;
-            case HIGH -> targetPosition = ELEVATOR_HIGH_POSE;
-        }
-        setElevatorPosition();
     }
 
 

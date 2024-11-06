@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.elevator.Elevator;
+import org.tahomarobotics.robot.elevator.ElevatorConstants;
 import org.tahomarobotics.robot.elevator.commands.ElevatorDefaultCommand;
+import org.tahomarobotics.robot.elevator.commands.ElevatorMoveCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -19,9 +21,9 @@ public class OI extends SubsystemIF {
     private void configureBindings(){
         Elevator elevator = Elevator.getInstance();
 
-        manipController.povUp().onTrue(Commands.runOnce(elevator::toHigh));
-        manipController.povRight().onTrue(Commands.runOnce(elevator::toMid));
-        manipController.povLeft().onTrue(Commands.runOnce(elevator::toLow));
+        manipController.povUp().onTrue(Commands.runOnce(elevator::toHigh).andThen(new ElevatorMoveCommand()));
+        manipController.povRight().onTrue(Commands.runOnce(elevator::toMid).andThen(new ElevatorMoveCommand()));
+        manipController.povDown().onTrue(Commands.runOnce(elevator::toLow).andThen(new ElevatorMoveCommand()));
 
     }
 
