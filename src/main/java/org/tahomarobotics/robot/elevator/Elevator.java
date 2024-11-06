@@ -15,8 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.elevator.commands.ElevatorZeroCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+
+import java.util.function.DoubleSupplier;
 
 import static org.tahomarobotics.robot.elevator.ElevatorConstants.*;
 
@@ -40,8 +43,7 @@ public class Elevator extends SubsystemIF {
         elevatorRight = new TalonFX(RobotMap.ELEVATOR_RIGHT_MOTOR);
         elevatorLeft = new TalonFX(RobotMap.ELEVATOR_LEFT_MOTOR);
 
-        configurator.configureTalonFX(elevatorRight, elevatorConfig, "Right elevator motor");
-        configurator.configureTalonFX(elevatorLeft, followerConfig, "Left elevator motor");
+        configurator.configureTalonFX(elevatorRight, elevatorConfig, elevatorLeft, true);
 
         elevatorPosition = elevatorRight.getPosition();
         elevatorVelocity = elevatorRight.getVelocity();
@@ -63,16 +65,16 @@ public class Elevator extends SubsystemIF {
         LOW
     }
 
-    public void setElevatorPosition(){
-        elevatorRight.setControl(positionControl.withPosition(MathUtil.clamp(targetPosition, ELEVATOR_MAX_POSE, ELEVATOR_MIN_POSE)));
+    public double getElevatorPosition() {
+        return elevatorPosition.getValueAsDouble();
     }
 
     public double getElevatorVelocity() {
         return elevatorVelocity.getValueAsDouble();
     }
 
-    public void setElevatorPosition(double position) {
-        targetPosition = MathUtil.clamp(position, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
+    public void setElevatorPosition() {
+        targetPosition = MathUtil.clamp(targetPosition, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
         elevatorRight.setControl(positionControl.withPosition(targetPosition));
     }
 
@@ -88,14 +90,20 @@ public class Elevator extends SubsystemIF {
 
     }
 
-    public void toHigh(){
+    public void toHigh() {
         elevatorState = ElevatorStates.HIGH;
     }
+
     public void toMid() {
         elevatorState = ElevatorStates.MID;
     }
-    public void toLow(){
+
+    public void toLow() {
         elevatorState = ElevatorStates.LOW;
+    }
+
+    public void move(DoubleSupplier velocity) {
+        elevatorRight.set(velocity.getAsDouble());
     }
 
     public void stop() {
@@ -104,12 +112,10 @@ public class Elevator extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-
-
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(new ElevatorZeroCommand())
                 .andThen(Commands.runOnce(() -> {
-                    setElevatorPosition(ELEVATOR_LOW_POSE);
+                    targetPosition = ELEVATOR_LOW_POSE;
                 }))
                 .ignoringDisable(true).schedule();
 
@@ -131,9 +137,9 @@ public class Elevator extends SubsystemIF {
         BaseStatusSignal.refreshAll(elevatorPosition, elevatorVelocity, elevatorCurrent);
 
         switch (elevatorState) {
-            case LOW -> setElevatorPosition(ELEVATOR_LOW_POSE);
-            case MID -> setElevatorPosition(ELEVATOR_MID_POSE);
-            case HIGH -> setElevatorPosition(ELEVATOR_HIGH_POSE);
+            case LOW -> targetPosition = ELEVATOR_LOW_POSE;
+            case MID -> targetPosition = ELEVATOR_MID_POSE;
+            case HIGH -> targetPosition = ELEVATOR_HIGH_POSE;
         }
         setElevatorPosition();
     }
