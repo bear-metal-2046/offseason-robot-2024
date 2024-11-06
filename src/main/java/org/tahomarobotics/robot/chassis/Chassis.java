@@ -2,7 +2,6 @@ package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,15 +11,12 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.chassis.commands.AlignSwerveCommand;
@@ -40,12 +36,6 @@ public class Chassis extends SubsystemIF {
     private final Gyro pigeon = new Gyro();
 
     private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
-    private ChassisSpeeds currentSpeeds = new ChassisSpeeds();
-    private ChassisSpeeds currentAcceleration = new ChassisSpeeds();
-    private final LinearFilter
-            xAccelFilter = LinearFilter.movingAverage(3),
-            yAccelFilter = LinearFilter.movingAverage(3),
-            rotAccelFilter = LinearFilter.movingAverage(3);
 
     private final CalibrationData<Double[]> swerveCalibration;
     private final SwerveDriveKinematics kinematics;
@@ -234,15 +224,6 @@ public class Chassis extends SubsystemIF {
         modules.forEach(SwerveModule::periodic);
 
         Pose2d pose = getPose();
-
-        ChassisSpeeds newChassisSpeeds = kinematics.toChassisSpeeds(getSwerveModuleStates());
-        ChassisSpeeds unfilteredAcceleration = newChassisSpeeds.minus(currentSpeeds);
-        currentAcceleration = new ChassisSpeeds(
-            xAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.vxMetersPerSecond)),
-            yAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.vyMetersPerSecond)),
-            rotAccelFilter.calculate(ChassisConstants.clampAccel(unfilteredAcceleration.omegaRadiansPerSecond))
-        );
-        currentSpeeds = newChassisSpeeds;
 
         fieldPose.setRobotPose(pose);
         SmartDashboard.putData(fieldPose);

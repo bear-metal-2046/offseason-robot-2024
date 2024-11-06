@@ -11,15 +11,15 @@ public class TeleopDriveCommand extends Command {
     private final Chassis chassis = Chassis.getInstance();
     private final ChassisSpeeds velocityInput = new ChassisSpeeds();
 
-    private final DoubleSupplier fwd, str, rot;
+    private final DoubleSupplier x, y, omega;
 
     private final double maxVelocity;
     private final double maxRotationalVelocity;
 
-    public TeleopDriveCommand(DoubleSupplier fwd, DoubleSupplier str, DoubleSupplier rot) {
-        this.fwd = fwd;
-        this.str = str;
-        this.rot = rot;
+    public TeleopDriveCommand(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
+        this.x = x;
+        this.y = y;
+        this.omega = omega;
         addRequirements(chassis);
 
         maxVelocity = ChassisConstants.MAX_VELOCITY;
@@ -28,9 +28,9 @@ public class TeleopDriveCommand extends Command {
 
     @Override
     public void execute() {
-        velocityInput.vxMetersPerSecond = fwd.getAsDouble() * maxVelocity;
-        velocityInput.vyMetersPerSecond = str.getAsDouble() * maxVelocity;
-        velocityInput.omegaRadiansPerSecond = rot.getAsDouble() * maxVelocity;
+        velocityInput.vxMetersPerSecond = x.getAsDouble() * maxVelocity;
+        velocityInput.vyMetersPerSecond = y.getAsDouble() * maxVelocity;
+        velocityInput.omegaRadiansPerSecond = omega.getAsDouble() * maxVelocity;
 
         chassis.drive(velocityInput);
     }
