@@ -42,6 +42,6 @@ public class ElevatorMoveCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return targetPosition - elevator.getElevatorPosition() <= ElevatorConstants.POSITION_ELIPSON || timer.hasElapsed(2.0);
+        return Math.abs(targetPosition - elevator.getElevatorPosition()) <= ElevatorConstants.POSITION_ELIPSON || timer.hasElapsed(2.0);
     }
 }
