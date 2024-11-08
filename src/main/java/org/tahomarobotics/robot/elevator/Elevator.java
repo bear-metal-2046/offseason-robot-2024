@@ -3,6 +3,7 @@ package org.tahomarobotics.robot.elevator;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
@@ -15,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
-import org.tahomarobotics.robot.elevator.commands.ElevatorMoveCommand;
-import org.tahomarobotics.robot.elevator.commands.ElevatorZeroCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -28,8 +27,7 @@ public class Elevator extends SubsystemIF {
 
     public static final Logger logger = LoggerFactory.getLogger(Elevator.class);
     private static final Elevator INSTANCE = new Elevator();
-    public ElevatorStates elevatorState = ElevatorStates.LOW;
-    private double targetPosition;
+    private double targetHeight;
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     TalonFX elevatorRight;
     TalonFX elevatorLeft;
@@ -39,6 +37,9 @@ public class Elevator extends SubsystemIF {
     private final StatusSignal<AngularVelocity> elevatorVelocity;
     private final StatusSignal<Current> elevatorCurrent;
 
+    public static Elevator getInstance() {
+        return INSTANCE;
+    }
 
     private Elevator() {
         RobustConfigurator configurator = new RobustConfigurator(logger);
@@ -56,10 +57,6 @@ public class Elevator extends SubsystemIF {
 
         ParentDevice.optimizeBusUtilizationForAll(elevatorRight, elevatorLeft);
 
-    }
-
-    public static Elevator getInstance() {
-        return INSTANCE;
     }
 
     public enum ElevatorStates {
@@ -81,38 +78,43 @@ public class Elevator extends SubsystemIF {
         return elevatorVelocity.getValueAsDouble();
     }
 
-    public void setElevatorHeight(double height) {
-        targetPosition = MathUtil.clamp(height, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
-        elevatorRight.setControl(positionControl.withPosition(targetPosition  * METERS_TO_ROTATIONS));
-    }
-
-
-    public void setVoltage(double voltage){
-        elevatorRight.setVoltage(voltage);
+    public double getTargetHeight(){
+        return targetHeight;
     }
 
     public void setElevatorState(ElevatorStates elevatorState){
         switch (elevatorState) {
             case LOW:
-                targetPosition = ELEVATOR_LOW_POSE;
+                targetHeight = ELEVATOR_LOW_POSE;
                 break;
 
             case MID:
-                targetPosition = ELEVATOR_MID_POSE;
+                targetHeight = ELEVATOR_MID_POSE;
                 break;
 
             case HIGH:
-                targetPosition = ELEVATOR_HIGH_POSE;
+                targetHeight = ELEVATOR_HIGH_POSE;
                 break;
         }
     }
 
-    public double getTargetPosition(){
-        return targetPosition;
+    public void setElevatorHeight(double height) {
+        targetHeight = MathUtil.clamp(height, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
+        elevatorRight.setControl(positionControl.withPosition(targetHeight * METERS_TO_ROTATIONS));
     }
 
-    public void move(DoubleSupplier velocity) {
-        elevatorRight.set(velocity.getAsDouble());
+    public boolean isAtPosition(){
+        return Math.abs(targetHeight - getElevatorHeight()) <= ElevatorConstants.POSITION_TOLERENCE;
+    }
+
+    public boolean nearBounds(){
+        return Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MIN_POSE) <= ElevatorConstants.POSITION_TOLERENCE
+                || Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MAX_POSE) <= ElevatorConstants.POSITION_TOLERENCE;
+    }
+
+
+    public void setVoltage(double voltage) {
+        elevatorRight.setControl(new VoltageOut(voltage));
     }
 
     public void stop() {
@@ -143,7 +145,7 @@ public class Elevator extends SubsystemIF {
     public void onTeleopInit() {
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
-                    targetPosition = ELEVATOR_LOW_POSE;
+                    targetHeight = ELEVATOR_LOW_POSE;
                 }))
                 .ignoringDisable(true).schedule();
     }
