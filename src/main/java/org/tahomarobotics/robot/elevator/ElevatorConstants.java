@@ -25,8 +25,8 @@ public class ElevatorConstants {
     public static final double DEGREES_TO_METERS = (MAIN_PULLEY_CIRCUMFERENCE * GEAR_REDUCTION) / 360.0;
     public static final double ROTATIONS_TO_DEGREES = 1.0 / 360.0;
 
-    public static final double ELEVATOR_MAX_VELOCITY = 1.0; // Meters / sec()
-    public static final double ELEVATOR_MAX_ACCELERATION = 1.0; // Meters / sec^2 ()
+    public static final double ELEVATOR_MAX_VELOCITY = 0.1; // Meters / sec()
+    public static final double ELEVATOR_MAX_ACCELERATION = 0.05; // Meters / sec^2 ()
 
 
     static final TalonFXConfiguration elevatorConfig = new TalonFXConfiguration()
