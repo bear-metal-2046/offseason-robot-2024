@@ -27,21 +27,17 @@ public class ElevatorZeroCommand extends Command {
 
     @Override
     public void execute() {
-        if (!zeroed || Math.abs(elevator.getElevatorVelocity()) <
-                ElevatorConstants.VELOCITY_EPSILON && timer.hasElapsed(5.0)){
-            elevator.stop();
-            zeroed = true;
-        }
+
+        elevator.stop();
     }
 
     @Override
     public boolean isFinished() {
-        return zeroed;
+        return !zeroed || Math.abs(elevator.getElevatorVelocity()) < ElevatorConstants.VELOCITY_EPSILON && timer.hasElapsed(5.0);
     }
 
     @Override
     public void end(boolean interrupted) {
-        elevator.zero();
         logger.info("Zeroed elevator");
     }
 }

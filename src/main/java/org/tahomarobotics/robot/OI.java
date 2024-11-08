@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.elevator.Elevator;
+import org.tahomarobotics.robot.elevator.commands.ElevatorDefaultCommand;
 import org.tahomarobotics.robot.elevator.commands.ElevatorMoveCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
@@ -43,6 +44,8 @@ public class OI extends SubsystemIF {
                 () -> -desensitizePowerBased(driveController.getLeftX(), LINEAR_SENSITIVITY),
                 () -> -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_CURVE)
         ));
+
+        Elevator.getInstance().setDefaultCommand(new ElevatorDefaultCommand(manipController::getLeftY));
     }
 
     public double desensitizePowerBased(double value, double power) {

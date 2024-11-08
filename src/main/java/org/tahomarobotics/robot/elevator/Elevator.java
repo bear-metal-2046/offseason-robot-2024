@@ -86,31 +86,29 @@ public class Elevator extends SubsystemIF {
         elevatorRight.setControl(positionControl.withPosition(targetPosition  * METERS_TO_ROTATIONS));
     }
 
-    public void zero() {
-        boolean isDisabled = RobotState.isDisabled();
 
-        if (RobustConfigurator.retryConfigurator(() -> elevatorRight.setPosition(ELEVATOR_LOW_POSE * METERS_TO_ROTATIONS),
-                "Zeroed Elevator",
-                "Failed to zero elevator",
-                "Retrying elevator zeroing").isError() && isDisabled) {
-            throw new RuntimeException("Uh...it didnt zero...I think you should power cycle");
+    public void setVoltage(double voltage){
+        elevatorRight.setVoltage(voltage);
+    }
+
+    public void setElevatorState(ElevatorStates elevatorState){
+        switch (elevatorState) {
+            case LOW:
+                targetPosition = ELEVATOR_LOW_POSE;
+                break;
+
+            case MID:
+                targetPosition = ELEVATOR_MID_POSE;
+                break;
+
+            case HIGH:
+                targetPosition = ELEVATOR_HIGH_POSE;
+                break;
         }
-
     }
 
-    public void toHigh() {
-        elevatorState = ElevatorStates.HIGH;
-        setElevatorHeight(ElevatorConstants.ELEVATOR_HIGH_POSE);
-    }
-
-    public void toMid() {
-        elevatorState = ElevatorStates.MID;
-        setElevatorHeight(ElevatorConstants.ELEVATOR_MID_POSE);
-    }
-
-    public void toLow() {
-        elevatorState = ElevatorStates.LOW;
-        setElevatorHeight(ElevatorConstants.ELEVATOR_LOW_POSE);
+    public double getTargetPosition(){
+        return targetPosition;
     }
 
     public void move(DoubleSupplier velocity) {
@@ -144,7 +142,6 @@ public class Elevator extends SubsystemIF {
     @Override
     public void onTeleopInit() {
         Commands.waitUntil(RobotState::isEnabled)
-                .andThen(new ElevatorZeroCommand())
                 .andThen(Commands.runOnce(() -> {
                     targetPosition = ELEVATOR_LOW_POSE;
                 }))

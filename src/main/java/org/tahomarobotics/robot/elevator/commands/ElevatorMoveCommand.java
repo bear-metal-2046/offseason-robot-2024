@@ -12,32 +12,24 @@ public class ElevatorMoveCommand extends Command {
     private final Timer timer = new Timer();
 
     private Elevator.ElevatorStates targetPosition;
-    private double targetPositionAsDouble;
+    private final double targetPositionAsDouble;
 
 
     public ElevatorMoveCommand(Elevator.ElevatorStates targetPosition) {
-        this.targetPosition = targetPosition;
+        elevator.setElevatorState(targetPosition);
+        targetPositionAsDouble = elevator.getTargetPosition();
         addRequirements(elevator);
     }
 
     @Override
     public void initialize() {
-        switch (targetPosition) {
-            case LOW:
-                elevator.toLow();
-                targetPositionAsDouble = ElevatorConstants.ELEVATOR_LOW_POSE;
-                break;
-            case MID:
-                elevator.toMid();
-                targetPositionAsDouble = ElevatorConstants.ELEVATOR_MID_POSE;
-                break;
-            case HIGH:
-                elevator.toHigh();
-                targetPositionAsDouble = ElevatorConstants.ELEVATOR_HIGH_POSE;
-                break;
-        }
         timer.reset();
         timer.start();
+    }
+
+    @Override
+    public void execute() {
+        elevator.setElevatorHeight(targetPositionAsDouble);
     }
 
     @Override
