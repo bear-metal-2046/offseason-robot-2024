@@ -15,15 +15,13 @@ public class OI extends SubsystemIF {
 
     private final CommandXboxController manipController = new CommandXboxController(1);
 
-    public OI getInstance(){
+    public static OI getInstance(){
         return INSTANCE;
     }
     private void configureBindings(){
-        Elevator elevator = Elevator.getInstance();
-
-        manipController.povUp().onTrue(Commands.runOnce(elevator::toHigh).andThen(new ElevatorMoveCommand()));
-        manipController.povRight().onTrue(Commands.runOnce(elevator::toMid).andThen(new ElevatorMoveCommand()));
-        manipController.povDown().onTrue(Commands.runOnce(elevator::toLow).andThen(new ElevatorMoveCommand()));
+        manipController.povUp().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.HIGH));
+        manipController.povRight().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.MID));
+        manipController.povDown().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.LOW));
 
     }
 

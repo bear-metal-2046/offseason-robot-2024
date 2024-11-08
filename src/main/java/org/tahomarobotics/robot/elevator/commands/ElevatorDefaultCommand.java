@@ -15,7 +15,9 @@ public class ElevatorDefaultCommand extends Command {
     @Override
     public void execute() {
         // add get postion
-        if (Math.abs(elevator.getElevatorVelocity()) <= ElevatorConstants.VELOCITY_ELIPSON || Math.abs(elevator.getElevatorPosition() - ElevatorConstants.ELEVATOR_MIN_POSE) <= ElevatorConstants.POSITION_ELIPSON || Math.abs(elevator.getElevatorPosition() - ElevatorConstants.ELEVATOR_MAX_POSE) <= ElevatorConstants.POSITION_ELIPSON) {
+        if (Math.abs(elevator.getElevatorVelocity()) <= ElevatorConstants.VELOCITY_EPSILON
+                || Math.abs(elevator.getElevatorHeight() - ElevatorConstants.ELEVATOR_MIN_POSE) <= ElevatorConstants.POSITION_EPSILON
+                || Math.abs(elevator.getElevatorHeight() - ElevatorConstants.ELEVATOR_MAX_POSE) <= ElevatorConstants.POSITION_EPSILON) {
             elevator.stop();
         }else{
             elevator.move(input);
@@ -24,11 +26,7 @@ public class ElevatorDefaultCommand extends Command {
 
 
     public ElevatorDefaultCommand(DoubleSupplier input) {
-        addRequirements(this.elevator);
+        addRequirements(elevator);
         this.input = input;
-
-
     }
-
-
 }

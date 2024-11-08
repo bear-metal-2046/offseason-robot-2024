@@ -33,7 +33,9 @@ public class Elevator extends SubsystemIF {
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     TalonFX elevatorRight;
     TalonFX elevatorLeft;
-    private final StatusSignal<Angle> elevatorPosition;
+
+    //Rotations
+    private final StatusSignal<Angle> motorPosition;
     private final StatusSignal<AngularVelocity> elevatorVelocity;
     private final StatusSignal<Current> elevatorCurrent;
 
@@ -44,13 +46,13 @@ public class Elevator extends SubsystemIF {
         elevatorRight = new TalonFX(RobotMap.ELEVATOR_RIGHT_MOTOR);
         elevatorLeft = new TalonFX(RobotMap.ELEVATOR_LEFT_MOTOR);
 
-        configurator.configureTalonFX(elevatorRight, elevatorConfig, elevatorLeft, true);
+        configurator.configureTalonFX(elevatorRight, elevatorConfig, elevatorLeft, false);
 
-        elevatorPosition = elevatorRight.getPosition();
+        motorPosition = elevatorRight.getPosition();
         elevatorVelocity = elevatorRight.getVelocity();
-        elevatorCurrent = elevatorRight.getSupplyCurrent();
+        elevatorCurrent = elevatorRight.getStatorCurrent();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, elevatorCurrent, elevatorPosition, elevatorVelocity);
+        BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, elevatorCurrent, motorPosition, elevatorVelocity);
 
         ParentDevice.optimizeBusUtilizationForAll(elevatorRight, elevatorLeft);
 
@@ -66,23 +68,28 @@ public class Elevator extends SubsystemIF {
         LOW
     }
 
-    public double getElevatorPosition() {
-        return elevatorPosition.getValueAsDouble();
+    //Degrees
+    public double getElevatorMotorRotation() {
+        return motorPosition.getValueAsDouble() * ROTATIONS_TO_DEGREES;
+    }
+
+    public double getElevatorHeight() {
+        return getElevatorMotorRotation() * DEGREES_TO_METERS;
     }
 
     public double getElevatorVelocity() {
         return elevatorVelocity.getValueAsDouble();
     }
 
-    public void setElevatorPosition(double position) {
-        targetPosition = MathUtil.clamp(position, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
-        elevatorRight.setControl(positionControl.withPosition(targetPosition));
+    public void setElevatorHeight(double height) {
+        targetPosition = MathUtil.clamp(height, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
+        elevatorRight.setControl(positionControl.withPosition(targetPosition  * METERS_TO_ROTATIONS));
     }
 
     public void zero() {
         boolean isDisabled = RobotState.isDisabled();
 
-        if (RobustConfigurator.retryConfigurator(() -> elevatorRight.setPosition(ELEVATOR_LOW_POSE),
+        if (RobustConfigurator.retryConfigurator(() -> elevatorRight.setPosition(ELEVATOR_LOW_POSE * METERS_TO_ROTATIONS),
                 "Zeroed Elevator",
                 "Failed to zero elevator",
                 "Retrying elevator zeroing").isError() && isDisabled) {
@@ -93,14 +100,17 @@ public class Elevator extends SubsystemIF {
 
     public void toHigh() {
         elevatorState = ElevatorStates.HIGH;
+        setElevatorHeight(ElevatorConstants.ELEVATOR_HIGH_POSE);
     }
 
     public void toMid() {
         elevatorState = ElevatorStates.MID;
+        setElevatorHeight(ElevatorConstants.ELEVATOR_MID_POSE);
     }
 
     public void toLow() {
         elevatorState = ElevatorStates.LOW;
+        setElevatorHeight(ElevatorConstants.ELEVATOR_LOW_POSE);
     }
 
     public void move(DoubleSupplier velocity) {
@@ -113,13 +123,6 @@ public class Elevator extends SubsystemIF {
 
     @Override
     public SubsystemIF initialize() {
-        Commands.waitUntil(RobotState::isEnabled)
-                .andThen(new ElevatorZeroCommand())
-                .andThen(Commands.runOnce(() -> {
-                    targetPosition = ELEVATOR_LOW_POSE;
-                }))
-                .ignoringDisable(true).schedule();
-
         return this;
     }
 
@@ -135,8 +138,16 @@ public class Elevator extends SubsystemIF {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(elevatorPosition, elevatorVelocity, elevatorCurrent);
+        BaseStatusSignal.refreshAll(motorPosition, elevatorVelocity, elevatorCurrent);
     }
 
-
+    @Override
+    public void onTeleopInit() {
+        Commands.waitUntil(RobotState::isEnabled)
+                .andThen(new ElevatorZeroCommand())
+                .andThen(Commands.runOnce(() -> {
+                    targetPosition = ELEVATOR_LOW_POSE;
+                }))
+                .ignoringDisable(true).schedule();
+    }
 }

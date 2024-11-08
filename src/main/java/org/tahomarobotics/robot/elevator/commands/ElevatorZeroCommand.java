@@ -16,7 +16,7 @@ public class ElevatorZeroCommand extends Command {
 
     Timer timer = new Timer();
 
-    private boolean zeroed;
+    private boolean zeroed = false;
 
     public ElevatorZeroCommand() {addRequirements(this.elevator);}
 
@@ -27,8 +27,8 @@ public class ElevatorZeroCommand extends Command {
 
     @Override
     public void execute() {
-        if (zeroed || Math.abs(elevator.getElevatorVelocity()) <
-                ElevatorConstants.VELOCITY_ELIPSON && timer.hasElapsed(5.0)){
+        if (!zeroed || Math.abs(elevator.getElevatorVelocity()) <
+                ElevatorConstants.VELOCITY_EPSILON && timer.hasElapsed(5.0)){
             elevator.stop();
             zeroed = true;
         }

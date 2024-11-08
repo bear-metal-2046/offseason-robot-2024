@@ -11,27 +11,33 @@ public class ElevatorMoveCommand extends Command {
     private final Elevator elevator = Elevator.getInstance();
     private final Timer timer = new Timer();
 
-    private double targetPosition;
+    private Elevator.ElevatorStates targetPosition;
+    private double targetPositionAsDouble;
 
 
-    public ElevatorMoveCommand() {
+    public ElevatorMoveCommand(Elevator.ElevatorStates targetPosition) {
+        this.targetPosition = targetPosition;
         addRequirements(elevator);
     }
 
     @Override
     public void initialize() {
-        switch (elevator.elevatorState) {
-            case LOW -> targetPosition = ELEVATOR_LOW_POSE;
-            case MID -> targetPosition = ELEVATOR_MID_POSE;
-            case HIGH -> targetPosition = ELEVATOR_HIGH_POSE;
+        switch (targetPosition) {
+            case LOW:
+                elevator.toLow();
+                targetPositionAsDouble = ElevatorConstants.ELEVATOR_LOW_POSE;
+                break;
+            case MID:
+                elevator.toMid();
+                targetPositionAsDouble = ElevatorConstants.ELEVATOR_MID_POSE;
+                break;
+            case HIGH:
+                elevator.toHigh();
+                targetPositionAsDouble = ElevatorConstants.ELEVATOR_HIGH_POSE;
+                break;
         }
         timer.reset();
         timer.start();
-    }
-
-    @Override
-    public void execute() {
-        elevator.setElevatorPosition(targetPosition);
     }
 
     @Override
@@ -42,6 +48,6 @@ public class ElevatorMoveCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(targetPosition - elevator.getElevatorPosition()) <= ElevatorConstants.POSITION_ELIPSON || timer.hasElapsed(2.0);
+        return Math.abs(targetPositionAsDouble - elevator.getElevatorHeight()) <= ElevatorConstants.POSITION_EPSILON || timer.hasElapsed(2.0);
     }
 }
