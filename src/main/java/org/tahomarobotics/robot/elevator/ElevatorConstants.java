@@ -16,7 +16,6 @@ public class ElevatorConstants {
     public static final double ELEVATOR_LOW_POSE = 0.2; // Meters
     public static final double ELEVATOR_MAX_POSE = 1.4; // Meters
     public static final double ELEVATOR_MIN_POSE = 0.0; // Meters
-    public static final double VELOCITY_EPSILON = 0.005;
     public static final double POSITION_TOLERENCE = 0.05;
 
     //rotations = meters/(circumference * GR)

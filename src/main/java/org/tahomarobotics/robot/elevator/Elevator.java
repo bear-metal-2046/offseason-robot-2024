@@ -19,8 +19,6 @@ import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
-import java.util.function.DoubleSupplier;
-
 import static org.tahomarobotics.robot.elevator.ElevatorConstants.*;
 
 public class Elevator extends SubsystemIF {
@@ -74,28 +72,12 @@ public class Elevator extends SubsystemIF {
         return getElevatorMotorRotation() * DEGREES_TO_METERS;
     }
 
-    public double getElevatorVelocity() {
-        return elevatorVelocity.getValueAsDouble();
-    }
-
-    public double getTargetHeight(){
-        return targetHeight;
-    }
-
-    public void setElevatorState(ElevatorStates elevatorState){
-        switch (elevatorState) {
-            case LOW:
-                targetHeight = ELEVATOR_LOW_POSE;
-                break;
-
-            case MID:
-                targetHeight = ELEVATOR_MID_POSE;
-                break;
-
-            case HIGH:
-                targetHeight = ELEVATOR_HIGH_POSE;
-                break;
-        }
+    public double getElevatorPos(ElevatorStates elevatorState) {
+        return switch (elevatorState) {
+            case MID -> ELEVATOR_MID_POSE;
+            case HIGH -> ELEVATOR_HIGH_POSE;
+            default -> ELEVATOR_LOW_POSE;
+        };
     }
 
     public void setElevatorHeight(double height) {
@@ -103,15 +85,17 @@ public class Elevator extends SubsystemIF {
         elevatorRight.setControl(positionControl.withPosition(targetHeight * METERS_TO_ROTATIONS));
     }
 
-    public boolean isAtPosition(){
+    public boolean isAtPosition() {
         return Math.abs(targetHeight - getElevatorHeight()) <= ElevatorConstants.POSITION_TOLERENCE;
     }
 
-    public boolean nearBounds(){
-        return Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MIN_POSE) <= ElevatorConstants.POSITION_TOLERENCE
-                || Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MAX_POSE) <= ElevatorConstants.POSITION_TOLERENCE;
+    public void set(double speed) {
+        if ((Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MIN_POSE) <= ElevatorConstants.POSITION_TOLERENCE && speed < 0)) {
+            elevatorRight.stopMotor();
+        } else if (Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MAX_POSE) <= ElevatorConstants.POSITION_TOLERENCE && speed > 0) {
+            elevatorRight.stopMotor();
+        } else elevatorRight.set(speed);
     }
-
 
     public void setVoltage(double voltage) {
         elevatorRight.setControl(new VoltageOut(voltage));
@@ -145,7 +129,7 @@ public class Elevator extends SubsystemIF {
     public void onTeleopInit() {
         Commands.waitUntil(RobotState::isEnabled)
                 .andThen(Commands.runOnce(() -> {
-                    targetHeight = ELEVATOR_LOW_POSE;
+                    setElevatorHeight(ELEVATOR_LOW_POSE);
                 }))
                 .ignoringDisable(true).schedule();
     }
