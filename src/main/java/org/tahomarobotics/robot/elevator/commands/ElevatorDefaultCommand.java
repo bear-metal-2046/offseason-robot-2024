@@ -16,6 +16,6 @@ public class ElevatorDefaultCommand extends Command {
 
     @Override
     public void execute() {
-        elevator.set(input.getAsDouble());
+        elevator.setVelocity(input.getAsDouble());
     }
 }

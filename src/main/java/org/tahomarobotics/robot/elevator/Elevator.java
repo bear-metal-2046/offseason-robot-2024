@@ -3,7 +3,6 @@ package org.tahomarobotics.robot.elevator;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
@@ -14,6 +13,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
@@ -89,16 +89,8 @@ public class Elevator extends SubsystemIF {
         return Math.abs(targetHeight - getElevatorHeight()) <= ElevatorConstants.POSITION_TOLERENCE;
     }
 
-    public void set(double speed) {
-        if ((Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MIN_POSE) <= ElevatorConstants.POSITION_TOLERENCE && speed < 0)) {
-            elevatorRight.stopMotor();
-        } else if (Math.abs(getElevatorHeight() - ElevatorConstants.ELEVATOR_MAX_POSE) <= ElevatorConstants.POSITION_TOLERENCE && speed > 0) {
-            elevatorRight.stopMotor();
-        } else elevatorRight.set(speed);
-    }
-
-    public void setVoltage(double voltage) {
-        elevatorRight.setControl(new VoltageOut(voltage));
+    public void setVelocity(double speed) {
+        setElevatorHeight(getElevatorHeight() + speed * Robot.kDefaultPeriod);
     }
 
     public void stop() {
