@@ -1,13 +1,7 @@
 {
-<<<<<<< HEAD
-  "fileName": "Phoenix6-frc2025-beta-latest.json",
-  "name": "CTRE-Phoenix (v6)",
-  "version": "25.0.0-beta-1",
-=======
   "fileName": "Phoenix6-25.0.0-beta-2.json",
   "name": "CTRE-Phoenix (v6)",
   "version": "25.0.0-beta-2",
->>>>>>> main
   "frcYear": "2025",
   "uuid": "e995de00-2c64-4df5-8831-c1441420ff19",
   "mavenUrls": [
@@ -30,22 +24,14 @@
     {
       "groupId": "com.ctre.phoenix6",
       "artifactId": "wpiapi-java",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1"
-=======
       "version": "25.0.0-beta-2"
->>>>>>> main
     }
   ],
   "jniDependencies": [
     {
       "groupId": "com.ctre.phoenix6",
       "artifactId": "api-cpp",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -58,11 +44,7 @@
     {
       "groupId": "com.ctre.phoenix6",
       "artifactId": "tools",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -75,11 +57,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "api-cpp-sim",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -92,11 +70,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "tools-sim",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -109,11 +83,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simTalonSRX",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -126,11 +96,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simVictorSPX",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -143,11 +109,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simPigeonIMU",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -160,11 +122,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simCANCoder",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -177,11 +135,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simProTalonFX",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -194,11 +148,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simProCANcoder",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -211,11 +161,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simProPigeon2",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "isJar": false,
       "skipInvalidPlatforms": true,
       "validPlatforms": [
@@ -230,11 +176,7 @@
     {
       "groupId": "com.ctre.phoenix6",
       "artifactId": "wpiapi-cpp",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_Phoenix6_WPI",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -249,11 +191,7 @@
     {
       "groupId": "com.ctre.phoenix6",
       "artifactId": "tools",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_PhoenixTools",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -268,11 +206,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "wpiapi-cpp-sim",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_Phoenix6_WPISim",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -287,11 +221,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "tools-sim",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_PhoenixTools_Sim",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -306,11 +236,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simTalonSRX",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_SimTalonSRX",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -325,11 +251,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simVictorSPX",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_SimVictorSPX",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -344,11 +266,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simPigeonIMU",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_SimPigeonIMU",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -363,11 +281,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simCANCoder",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_SimCANCoder",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -382,11 +296,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simProTalonFX",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_SimProTalonFX",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -401,11 +311,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simProCANcoder",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_SimProCANcoder",
       "headerClassifier": "headers",
       "sharedLibrary": true,
@@ -420,11 +326,7 @@
     {
       "groupId": "com.ctre.phoenix6.sim",
       "artifactId": "simProPigeon2",
-<<<<<<< HEAD
-      "version": "25.0.0-beta-1",
-=======
       "version": "25.0.0-beta-2",
->>>>>>> main
       "libName": "CTRE_SimProPigeon2",
       "headerClassifier": "headers",
       "sharedLibrary": true,

@@ -10,6 +10,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,13 +64,8 @@ public class Elevator extends SubsystemIF {
         LOW
     }
 
-    //Degrees
-    public double getElevatorMotorRotation() {
-        return motorPosition.getValueAsDouble() * ROTATIONS_TO_DEGREES;
-    }
-
     public double getElevatorHeight() {
-        return getElevatorMotorRotation() * DEGREES_TO_METERS;
+        return motorPosition.getValueAsDouble();
     }
 
     public double getElevatorPos(ElevatorStates elevatorState) {
@@ -82,7 +78,7 @@ public class Elevator extends SubsystemIF {
 
     public void setElevatorHeight(double height) {
         targetHeight = MathUtil.clamp(height, ELEVATOR_MIN_POSE, ELEVATOR_MAX_POSE);
-        elevatorRight.setControl(positionControl.withPosition(targetHeight * METERS_TO_ROTATIONS));
+        elevatorRight.setControl(positionControl.withPosition(targetHeight));
     }
 
     public boolean isAtPosition() {
@@ -114,6 +110,7 @@ public class Elevator extends SubsystemIF {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Elevator height", getElevatorHeight());
         BaseStatusSignal.refreshAll(motorPosition, elevatorVelocity, elevatorCurrent);
     }
 
