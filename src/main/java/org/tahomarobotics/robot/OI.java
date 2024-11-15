@@ -52,7 +52,7 @@ public class OI extends SubsystemIF {
                 () -> -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_CURVE)
         ));
 
-        Elevator.getInstance().setDefaultCommand(new ElevatorDefaultCommand(manipController::getLeftY));
+        Elevator.getInstance().setDefaultCommand(new ElevatorDefaultCommand(() -> deadBand(manipController.getLeftY(), DEAD_ZONE)));
     }
 
     public double desensitizePowerBased(double value, double power) {

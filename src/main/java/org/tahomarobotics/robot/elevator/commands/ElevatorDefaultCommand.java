@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.elevator.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import org.tahomarobotics.robot.elevator.Elevator;
+import org.tahomarobotics.robot.elevator.ElevatorConstants;
 
 import java.util.function.DoubleSupplier;
 
@@ -16,6 +17,6 @@ public class ElevatorDefaultCommand extends Command {
 
     @Override
     public void execute() {
-        elevator.setVelocity(-input.getAsDouble());
+        elevator.setVelocity(-input.getAsDouble() * ElevatorConstants.ELEVATOR_MAX_VELOCITY);
     }
 }

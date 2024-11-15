@@ -2,6 +2,7 @@ package org.tahomarobotics.robot.elevator;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -60,7 +61,7 @@ public class Elevator extends SubsystemIF {
 
         BaseStatusSignal.setUpdateFrequencyForAll(RobotConfiguration.MECHANISM_UPDATE_FREQUENCY, elevatorCurrent, motorPosition, elevatorVelocity);
 
-        ParentDevice.optimizeBusUtilizationForAll(elevatorRight, elevatorLeft);
+//        ParentDevice.optimizeBusUtilizationForAll(elevatorRight, elevatorLeft);
 
     }
 
@@ -92,7 +93,7 @@ public class Elevator extends SubsystemIF {
     }
 
     public void setVelocity(double speed) {
-        setElevatorHeight(getElevatorHeight() + speed * Robot.kDefaultPeriod);
+        setElevatorHeight(targetHeight + speed * Robot.kDefaultPeriod);
     }
 
     public void stop() {
@@ -116,7 +117,10 @@ public class Elevator extends SubsystemIF {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator height", getElevatorHeight());
+        SmartDashboard.putNumber("Elevator Height", getElevatorHeight());
+        SmartDashboard.putNumber("Target Position:", targetHeight);
+        SmartDashboard.putNumber("Motor Voltage", elevatorRight.getMotorVoltage().getValueAsDouble());
+//        SmartDashboard.putNumber("REAL Target Position", elevatorRight.getAppliedControl() instanceof ControlRequest ? );
         BaseStatusSignal.refreshAll(motorPosition, elevatorVelocity, elevatorCurrent);
     }
 
