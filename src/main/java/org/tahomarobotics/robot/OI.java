@@ -3,6 +3,7 @@ package org.tahomarobotics.robot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.elevator.Elevator;
@@ -32,6 +33,12 @@ public class OI extends SubsystemIF {
 
     public void configureBindings() {
         driveController.a().onTrue(Commands.runOnce(Chassis.getInstance()::zeroHeading));
+
+        manipController.a().whileTrue(Elevator.getInstance().sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        manipController.x().whileTrue(Elevator.getInstance().sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+        manipController.y().whileTrue(Elevator.getInstance().sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        manipController.b().whileTrue(Elevator.getInstance().sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
         manipController.povUp().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.HIGH));
         manipController.povRight().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.MID));

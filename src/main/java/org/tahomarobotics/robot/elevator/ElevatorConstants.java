@@ -18,7 +18,7 @@ public class ElevatorConstants {
     public static final double ELEVATOR_MIN_POSE = 0.0; // Meters
     public static final double POSITION_TOLERENCE = 0.05;
 
-    public static final double ELEVATOR_MAX_VELOCITY = 0.1; // Meters / sec
+    public static final double ELEVATOR_MAX_VELOCITY = 0.5; // Meters / sec
     public static final double ELEVATOR_MAX_ACCELERATION = 0.05; // Meters / sec^2
 
 

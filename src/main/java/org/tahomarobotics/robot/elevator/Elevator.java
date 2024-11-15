@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.Robot;
@@ -19,6 +20,7 @@ import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
+import org.tahomarobotics.robot.util.SysIdTest;
 
 import static org.tahomarobotics.robot.elevator.ElevatorConstants.*;
 
@@ -30,6 +32,8 @@ public class Elevator extends SubsystemIF {
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withEnableFOC(RobotConfiguration.RIO_PHOENIX_PRO);
     TalonFX elevatorRight;
     TalonFX elevatorLeft;
+
+    public SysIdTest sysIdTest;
 
     //Rotations
     private final StatusSignal<Angle> motorPosition;
@@ -47,6 +51,8 @@ public class Elevator extends SubsystemIF {
         elevatorLeft = new TalonFX(RobotMap.ELEVATOR_LEFT_MOTOR);
 
         configurator.configureTalonFX(elevatorRight, elevatorConfig, elevatorLeft, false);
+
+        sysIdTest = new SysIdTest(this, elevatorRight);
 
         motorPosition = elevatorRight.getPosition();
         elevatorVelocity = elevatorRight.getVelocity();

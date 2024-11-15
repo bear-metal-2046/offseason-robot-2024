@@ -28,16 +28,16 @@ public class SysIdTest extends SubsystemIF {
 
         sysIdRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(
-                        Volts.of(0.25).per(Second),
-                        Volts.of(1),
+                        Volts.of(0.5).per(Second),
+                        Volts.of(2),
                         null,
                         null),
                 new SysIdRoutine.Mechanism(
                         (Voltage volts) -> motor.setControl(control.withOutput(volts.in(Volts))),
                         log -> log.motor("motor")
                                 .voltage(motor.getMotorVoltage().getValue())
-                                .angularPosition(motor.getPosition().getValue())
-                                .angularVelocity(motor.getVelocity().getValue()),
+                                .linearPosition(Meters.of(motor.getPosition().getValueAsDouble()))
+                                .linearVelocity(MetersPerSecond.of(motor.getVelocity().getValueAsDouble())),
                         subsystem
                 )
         );
