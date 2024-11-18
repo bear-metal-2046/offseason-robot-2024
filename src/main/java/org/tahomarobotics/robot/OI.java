@@ -3,8 +3,12 @@ package org.tahomarobotics.robot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.tahomarobotics.robot.chassis.Chassis;
 import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
+import org.tahomarobotics.robot.elevator.Elevator;
+import org.tahomarobotics.robot.elevator.commands.ElevatorDefaultCommand;
+import org.tahomarobotics.robot.elevator.commands.ElevatorMoveCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -23,12 +27,22 @@ public class OI extends SubsystemIF {
 
     public OI() {
         CommandScheduler.getInstance().unregisterSubsystem(this);
-        setDriveControls();
+        configureBindings();
         setDefaultCommands();
     }
 
-    public void setDriveControls() {
+    public void configureBindings() {
         driveController.a().onTrue(Commands.runOnce(Chassis.getInstance()::zeroHeading));
+
+        manipController.a().whileTrue(Elevator.getInstance().sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        manipController.x().whileTrue(Elevator.getInstance().sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+        manipController.y().whileTrue(Elevator.getInstance().sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        manipController.b().whileTrue(Elevator.getInstance().sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+        manipController.povUp().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.HIGH));
+        manipController.povRight().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.MID));
+        manipController.povDown().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.LOW));
     }
 
     public void setDefaultCommands() {
@@ -37,6 +51,8 @@ public class OI extends SubsystemIF {
                 () -> -desensitizePowerBased(driveController.getLeftX(), LINEAR_SENSITIVITY),
                 () -> -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_CURVE)
         ));
+
+        Elevator.getInstance().setDefaultCommand(new ElevatorDefaultCommand(() -> deadBand(manipController.getLeftY(), DEAD_ZONE)));
     }
 
     public double desensitizePowerBased(double value, double power) {

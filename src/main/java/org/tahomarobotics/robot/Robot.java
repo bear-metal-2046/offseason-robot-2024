@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.tahomarobotics.robot.chassis.Chassis;
+import org.tahomarobotics.robot.elevator.Elevator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         subsystems.add(OI.getInstance().initialize());
         subsystems.add(Chassis.getInstance().initialize());
+        subsystems.add(Elevator.getInstance().initialize());
     }
     
     
