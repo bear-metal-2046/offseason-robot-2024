@@ -1,6 +1,9 @@
 package org.tahomarobotics.robot.chassis;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,6 +13,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Threads;
@@ -33,7 +38,11 @@ public class Chassis extends SubsystemIF {
     private static final Chassis INSTANCE = new Chassis();
 
     private final List<SwerveModule> modules;
-    private final Gyro pigeon = new Gyro();
+
+    private final Pigeon2 pigeon = new Pigeon2(RobotMap.PIGEON, RobotConfiguration.CANBUS_NAME);
+    private final StatusSignal<Angle> yaw = pigeon.getYaw();
+    private final StatusSignal<AngularVelocity> yawVelocity = pigeon.getAngularVelocityZWorld();
+    public record ValidYaw(Rotation2d yaw, boolean valid) {}
 
     private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
@@ -89,9 +98,9 @@ public class Chassis extends SubsystemIF {
     @Override
     public SubsystemIF initialize() {
         SmartDashboard.putData("AlignSwerve", new AlignSwerveCommand());
-        pigeon.zeroHeading();
+        zeroHeading();
 
-        var gyro = getYaw();
+        var gyro = getYaw().yaw;
         var modules = getSwerveModulePositions();
         synchronized (poseEstimator) {
             //changed SwerveDriveWheelPositions to passing in an array of the module positions
@@ -107,7 +116,7 @@ public class Chassis extends SubsystemIF {
         Threads.setCurrentThreadPriority(true, 1);
 
         // Get signals array
-        List<BaseStatusSignal> signalList = new ArrayList<>(pigeon.getStatusSignals());
+        List<BaseStatusSignal> signalList = new ArrayList<>(getStatusSignals());
         for (var module : this.modules) {
             signalList.addAll(module.getStatusSignals());
         }
@@ -161,8 +170,13 @@ public class Chassis extends SubsystemIF {
         return modules.stream().map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
 
-    public Rotation2d getYaw() {
-        return heading;
+    public ValidYaw getYaw() {
+        boolean valid = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
+        return new ValidYaw(Rotation2d.fromDegrees(BaseStatusSignal.getLatencyCompensatedValueAsDouble(yaw, yawVelocity)), valid);
+    }
+
+    private List<BaseStatusSignal> getStatusSignals() {
+        return List.of(yaw, yawVelocity);
     }
 
     // DRIVING
@@ -189,7 +203,7 @@ public class Chassis extends SubsystemIF {
     }
 
     public void zeroHeading() {
-        pigeon.zeroHeading();
+        pigeon.setYaw(0);
     }
 
     private void updatePosition() {
@@ -200,7 +214,7 @@ public class Chassis extends SubsystemIF {
         }
 
         synchronized (pigeon) {
-            var validYaw = pigeon.getYaw();
+            var validYaw = getYaw();
 
             // If pigeon yaw is valid, accept it as the real value
             if (validYaw.valid()) {
