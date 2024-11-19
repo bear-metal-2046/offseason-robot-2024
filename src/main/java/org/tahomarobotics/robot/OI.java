@@ -9,6 +9,8 @@ import org.tahomarobotics.robot.chassis.commands.TeleopDriveCommand;
 import org.tahomarobotics.robot.elevator.Elevator;
 import org.tahomarobotics.robot.elevator.commands.ElevatorDefaultCommand;
 import org.tahomarobotics.robot.elevator.commands.ElevatorMoveCommand;
+import org.tahomarobotics.robot.mechanism.Mechanism;
+import org.tahomarobotics.robot.mechanism.commands.DefaultMechanismCommand;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class OI extends SubsystemIF {
@@ -17,6 +19,10 @@ public class OI extends SubsystemIF {
     private static final double ROTATIONAL_CURVE = 2.0;
     private static final double LINEAR_SENSITIVITY = 1.3;
     private static final double DEAD_ZONE = 0.09;
+
+    private final Elevator elevator = Elevator.getInstance();
+    private final Chassis chassis = Chassis.getInstance();
+    private final Mechanism mechanism = Mechanism.getInstance();
 
     public static OI getInstance() {
         return INSTANCE;
@@ -32,27 +38,32 @@ public class OI extends SubsystemIF {
     }
 
     public void configureBindings() {
-        driveController.a().onTrue(Commands.runOnce(Chassis.getInstance()::zeroHeading));
+        driveController.a().onTrue(Commands.runOnce(chassis::zeroHeading));
 
-        manipController.a().whileTrue(Elevator.getInstance().sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        manipController.x().whileTrue(Elevator.getInstance().sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        manipController.a().whileTrue(elevator.sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        manipController.x().whileTrue(elevator.sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        manipController.y().whileTrue(Elevator.getInstance().sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        manipController.b().whileTrue(Elevator.getInstance().sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        manipController.y().whileTrue(elevator.sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        manipController.b().whileTrue(elevator.sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
         manipController.povUp().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.HIGH));
         manipController.povRight().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.MID));
         manipController.povDown().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.LOW));
+
+        mechanism.setDefaultCommand(new DefaultMechanismCommand(
+                () -> deadBand(manipController.getRightY(), DEAD_ZONE),
+                () -> deadBand(manipController.getLeftY(), DEAD_ZONE)
+        ));
     }
 
     public void setDefaultCommands() {
-        Chassis.getInstance().setDefaultCommand(new TeleopDriveCommand(
+        chassis.setDefaultCommand(new TeleopDriveCommand(
                 () -> -desensitizePowerBased(driveController.getLeftY(), LINEAR_SENSITIVITY),
                 () -> -desensitizePowerBased(driveController.getLeftX(), LINEAR_SENSITIVITY),
                 () -> -desensitizePowerBased(driveController.getRightX(), ROTATIONAL_CURVE)
         ));
 
-        Elevator.getInstance().setDefaultCommand(new ElevatorDefaultCommand(() -> deadBand(manipController.getLeftY(), DEAD_ZONE)));
+        elevator.setDefaultCommand(new ElevatorDefaultCommand(() -> deadBand(manipController.getLeftY(), DEAD_ZONE)));
     }
 
     public double desensitizePowerBased(double value, double power) {
