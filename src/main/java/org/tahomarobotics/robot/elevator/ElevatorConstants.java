@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 
 
 public class ElevatorConstants {
@@ -11,11 +12,12 @@ public class ElevatorConstants {
     public static final double GEAR_REDUCTION = 12d / 72d * 30d / 60d;
     private static final double MAIN_PULLEY_CIRCUMFERENCE = 0.22742; // Meters
     public static final double SENSOR_COEFFICIENT = GEAR_REDUCTION * MAIN_PULLEY_CIRCUMFERENCE;
-    public static final double ELEVATOR_HIGH_POSE = 1.1; // Meters
-    public static final double ELEVATOR_MID_POSE = 0.7; // Meters
-    public static final double ELEVATOR_LOW_POSE = 0.2; // Meters
-    public static final double ELEVATOR_MAX_POSE = 1.2; // Meters
-    public static final double ELEVATOR_MIN_POSE = 0.1; // Meters
+    public static final double ELEVATOR_PHYSICAL_BOTTOM = Units.inchesToMeters(5.681); // Meters
+    public static final double ELEVATOR_MAX_POSE = Units.inchesToMeters(52) - ELEVATOR_PHYSICAL_BOTTOM; // Meters
+    public static final double ELEVATOR_MIN_POSE = 0.01; // Meters
+    public static final double ELEVATOR_HIGH_POSE = Math.min(ELEVATOR_MAX_POSE, Units.inchesToMeters(60.5)) - ELEVATOR_PHYSICAL_BOTTOM; // Meters
+    public static final double ELEVATOR_MID_POSE = Units.inchesToMeters(40.5) - ELEVATOR_PHYSICAL_BOTTOM; // Meters
+    public static final double ELEVATOR_LOW_POSE = Units.inchesToMeters(14) - ELEVATOR_PHYSICAL_BOTTOM; // Meters
     public static final double POSITION_TOLERENCE = 0.005; //Meters
 
     public static final double ELEVATOR_MAX_VELOCITY = 2; // Meters / sec
