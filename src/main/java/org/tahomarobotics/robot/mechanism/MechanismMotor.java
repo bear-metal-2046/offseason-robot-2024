@@ -13,8 +13,7 @@ public class MechanismMotor {
 
     public MechanismMotor(int motorID) {
         motor = new TalonFX(motorID);
-        motor.getConfigurator().apply(new TalonFXConfiguration());
-        motor.setNeutralMode(NeutralModeValue.Brake);
+        motor.getConfigurator().apply(MechanismConstants.mechanismMotorConfig);
     }
 
     // SETTERS

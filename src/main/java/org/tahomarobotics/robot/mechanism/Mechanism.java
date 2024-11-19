@@ -3,7 +3,7 @@ package org.tahomarobotics.robot.mechanism;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class Mechanism extends SubsystemIF {
-    private static Mechanism INSTANCE = new Mechanism();
+    private static final Mechanism INSTANCE = new Mechanism();
 
     public static Mechanism getInstance() {
         return INSTANCE;
