@@ -21,9 +21,9 @@ public class ChassisConstants {
     public static final double DRIVE_POSITION_COEFFICIENT = WHEEL_CIRCUMFERENCE * DRIVE_REDUCTION;
 
     public static final DCMotor SWERVE_MOTOR = DCMotor.getKrakenX60(1);
-    public static final double MAX_VELOCITY = SWERVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS * 1.1;
+    public static final double MAX_VELOCITY = SWERVE_MOTOR.freeSpeedRadPerSec * DRIVE_REDUCTION * WHEEL_RADIUS * 0.5;
     public static final double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(HALF_TRACK_WIDTH, HALF_WHEELBASE);
-    public static final double ACCELERATION_LIMIT = 6.0;
+    public static final double ACCELERATION_LIMIT = 3.0;
 
     public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(HALF_WHEELBASE, HALF_TRACK_WIDTH);
     public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(HALF_WHEELBASE, -HALF_TRACK_WIDTH);

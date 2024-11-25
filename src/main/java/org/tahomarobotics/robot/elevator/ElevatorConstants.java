@@ -20,7 +20,7 @@ public class ElevatorConstants {
     public static final double POSITION_TOLERANCE = 0.005; // Meters
     public static final double VELOCITY_TOLERANCE = 0.01; // Meters / second
 
-    public static final double ELEVATOR_MAX_VELOCITY = 1.5; // Meters / sec
+    public static final double ELEVATOR_MAX_VELOCITY = 1; // Meters / sec
     public static final double ELEVATOR_MAX_ACCELERATION = ELEVATOR_MAX_VELOCITY * 4.0; // Meters / sec^2
 
     public static final double ZEROING_VOLTAGE = -1;
