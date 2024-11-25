@@ -1,5 +1,6 @@
 package org.tahomarobotics.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -54,6 +55,10 @@ public class OI extends SubsystemIF {
                 () -> deadBand(manipController.getRightY(), DEAD_ZONE),
                 () -> deadBand(manipController.getLeftY(), DEAD_ZONE)
         ));
+
+        SmartDashboard.putData("LOW", new ElevatorMoveCommand(Elevator.ElevatorStates.LOW));
+        SmartDashboard.putData("MID", new ElevatorMoveCommand(Elevator.ElevatorStates.MID));
+        SmartDashboard.putData("🚬", new ElevatorMoveCommand(Elevator.ElevatorStates.HIGH));
     }
 
     public void setDefaultCommands() {
