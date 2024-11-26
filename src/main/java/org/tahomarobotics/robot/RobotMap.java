@@ -33,5 +33,8 @@ public final class RobotMap {
         public static final int ELEVATOR_RIGHT_MOTOR = 5;
         public static final int ELEVATOR_LEFT_MOTOR = 6;
 
+        public static final int MECHANISM_MOTOR_1 = 7;
+        public static final int MECHANISM_MOTOR_2 = 8;
+
         public record SwerveModuleDescriptor(String moduleName, Translation2d offset, int driveId, int steerId, int encoderId) { }
 }

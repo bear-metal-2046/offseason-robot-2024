@@ -41,19 +41,13 @@ public class OI extends SubsystemIF {
     public void configureBindings() {
         driveController.a().onTrue(Commands.runOnce(chassis::zeroHeading));
 
-        manipController.a().whileTrue(elevator.sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        manipController.x().whileTrue(elevator.sysIdTest.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-        manipController.y().whileTrue(elevator.sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        manipController.b().whileTrue(elevator.sysIdTest.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-
         manipController.povUp().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.HIGH));
         manipController.povRight().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.MID));
         manipController.povDown().onTrue(new ElevatorMoveCommand(Elevator.ElevatorStates.LOW));
 
         mechanism.setDefaultCommand(new DefaultMechanismCommand(
-                () -> deadBand(manipController.getRightY(), DEAD_ZONE),
-                () -> deadBand(manipController.getLeftY(), DEAD_ZONE)
+                () -> -deadBand(manipController.getRightY(), DEAD_ZONE),
+                () -> deadBand(manipController.getLeftTriggerAxis() - manipController.getRightTriggerAxis(), DEAD_ZONE)
         ));
 
         SmartDashboard.putData("LOW", new ElevatorMoveCommand(Elevator.ElevatorStates.LOW));

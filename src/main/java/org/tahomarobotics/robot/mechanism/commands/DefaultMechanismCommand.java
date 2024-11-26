@@ -19,7 +19,7 @@ public class DefaultMechanismCommand extends Command {
 
     @Override
     public void execute() {
-        Mechanism.getInstance().moveMotor1AtVelocity(motor1Speed.getAsDouble());
-        Mechanism.getInstance().moveMotor2AtVelocity(motor2Speed.getAsDouble());
+        Mechanism.getInstance().moveMotor1AtPercent(motor1Speed.getAsDouble());
+        Mechanism.getInstance().moveMotor2AtPercent(motor2Speed.getAsDouble());
     }
 }
