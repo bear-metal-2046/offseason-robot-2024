@@ -13,11 +13,13 @@ public class DefaultMechanismCommand extends Command {
     public DefaultMechanismCommand(DoubleSupplier motor1Speed, DoubleSupplier motor2Speed) {
         this.motor1Speed = motor1Speed;
         this.motor2Speed = motor2Speed;
+
+        addRequirements(Mechanism.getInstance());
     }
 
     @Override
     public void execute() {
-        Mechanism.getInstance().moveMotor1AtVelocity(motor1Speed.getAsDouble());
-        Mechanism.getInstance().moveMotor2AtVelocity(motor2Speed.getAsDouble());
+        Mechanism.getInstance().moveMotor1AtPercent(motor1Speed.getAsDouble());
+        Mechanism.getInstance().moveMotor2AtPercent(motor2Speed.getAsDouble());
     }
 }

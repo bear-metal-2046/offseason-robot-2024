@@ -10,23 +10,26 @@ public class ElevatorConstants {
 
     public static final double GEAR_REDUCTION = 12d / 72d * 30d / 60d;
     private static final double MAIN_PULLEY_CIRCUMFERENCE = 0.22742; // Meters
-    public static final double SENSOR_COEFFICIENT = GEAR_REDUCTION * MAIN_PULLEY_CIRCUMFERENCE;
-    public static final double ELEVATOR_HIGH_POSE = 1.1; // Meters
-    public static final double ELEVATOR_MID_POSE = 0.7; // Meters
-    public static final double ELEVATOR_LOW_POSE = 0.2; // Meters
-    public static final double ELEVATOR_MAX_POSE = 1.2; // Meters
-    public static final double ELEVATOR_MIN_POSE = 0.1; // Meters
-    public static final double POSITION_TOLERENCE = 0.005; //Meters
+    public static final double SENSOR_COEFFICIENT = GEAR_REDUCTION * MAIN_PULLEY_CIRCUMFERENCE; // Meters
+    public static final double ELEVATOR_MAX_POSE = 1.089600; // Meters
+    public static final double ELEVATOR_MIN_POSE = 0.01; // Meters
+    public static final double ELEVATOR_HIGH_POSE = 1.089600; // Meters
+    public static final double ELEVATOR_MID_POSE = 0.884033; // Meters
+    public static final double ELEVATOR_LOW_POSE = 0.184082; // Meters
 
-    public static final double ELEVATOR_MAX_VELOCITY = 2; // Meters / sec
+    public static final double POSITION_TOLERANCE = 0.005; // Meters
+    public static final double VELOCITY_TOLERANCE = 0.01; // Meters / second
+
+    public static final double ELEVATOR_MAX_VELOCITY = 1; // Meters / sec
     public static final double ELEVATOR_MAX_ACCELERATION = ELEVATOR_MAX_VELOCITY * 4.0; // Meters / sec^2
 
+    public static final double ZEROING_VOLTAGE = -1;
 
     static final TalonFXConfiguration elevatorConfig = new TalonFXConfiguration()
             .withSlot0(new Slot0Configs()
                     .withGravityType(GravityTypeValue.Elevator_Static)
-                    .withKP(20.0)
-                    .withKI(0.0)
+                    .withKP(75.0)
+                    .withKI(1.0)
                     .withKD(0.0)
                     .withKS(0.0)
                     .withKV(0.0)

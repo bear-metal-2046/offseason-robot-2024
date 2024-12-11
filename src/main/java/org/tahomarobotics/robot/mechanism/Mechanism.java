@@ -1,5 +1,7 @@
 package org.tahomarobotics.robot.mechanism;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.SubsystemIF;
 
 public class Mechanism extends SubsystemIF {
@@ -9,44 +11,20 @@ public class Mechanism extends SubsystemIF {
         return INSTANCE;
     }
 
-    private final MechanismMotor motor1;
-    private final MechanismMotor motor2;
+    private final TalonFX motor1 = new TalonFX(RobotMap.MECHANISM_MOTOR_1);
+    private final TalonFX motor2 = new TalonFX(RobotMap.MECHANISM_MOTOR_2);
 
     private Mechanism() {
-        motor1 = new MechanismMotor(1);
-        motor2 = new MechanismMotor(2);
+        motor1.getConfigurator().apply(MechanismConstants.mechanismMotorConfig);
+        motor2.getConfigurator().apply(MechanismConstants.mechanismMotorConfig);
     }
 
-    public void moveMotor1ToPosition(double pos) {
-        motor1.moveToPosition(pos);
+    public void moveMotor1AtPercent(double percent) {
+        motor1.set(percent * MechanismConstants.MULTIPLIER);
     }
 
-    public void moveMotor2ToPosition(double pos) {
-        motor2.moveToPosition(pos);
-    }
-
-    public void moveMotor1AtVelocity(double speed) {
-        motor1.moveVelocity(speed);
-    }
-
-    public void moveMotor2AtVelocity(double speed) {
-        motor2.moveVelocity(speed);
-    }
-
-    public double getMotor1Position() {
-        return motor1.getPosition();
-    }
-
-    public double getMotor2Position() {
-        return motor2.getPosition();
-    }
-
-    public double getMotor1Velocity() {
-        return motor1.getVelocity();
-    }
-
-    public double getMotor2Velocity() {
-        return motor2.getVelocity();
+    public void moveMotor2AtPercent(double percent) {
+        motor2.set(percent * MechanismConstants.MULTIPLIER);
     }
 
     @Override

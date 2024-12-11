@@ -2,9 +2,7 @@ package org.tahomarobotics.robot.elevator;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
@@ -13,12 +11,12 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tahomarobotics.robot.Robot;
 import org.tahomarobotics.robot.RobotConfiguration;
 import org.tahomarobotics.robot.RobotMap;
+import org.tahomarobotics.robot.elevator.commands.ElevatorZeroCommand;
 import org.tahomarobotics.robot.util.RobustConfigurator;
 import org.tahomarobotics.robot.util.SubsystemIF;
 import org.tahomarobotics.robot.util.SysIdTest;
@@ -65,6 +63,10 @@ public class Elevator extends SubsystemIF {
 
     }
 
+    public void zero() {
+        elevatorRight.setPosition(0);
+    }
+
     public enum ElevatorStates {
         HIGH,
         MID,
@@ -89,20 +91,21 @@ public class Elevator extends SubsystemIF {
     }
 
     public boolean isAtPosition() {
-        return Math.abs(targetHeight - getElevatorHeight()) <= ElevatorConstants.POSITION_TOLERENCE;
+        return Math.abs(targetHeight - getElevatorHeight()) <= ElevatorConstants.POSITION_TOLERANCE;
+    }
+
+    public boolean isMoving() {
+        return Math.abs(elevatorVelocity.refresh().getValueAsDouble()) > VELOCITY_TOLERANCE;
     }
 
     public void setVelocity(double speed) {
         setElevatorHeight(targetHeight + speed * Robot.kDefaultPeriod);
     }
 
+    public void setVoltage(double voltage) { elevatorRight.setVoltage(voltage); }
+
     public void stop() {
         elevatorRight.stopMotor();
-    }
-
-    @Override
-    public SubsystemIF initialize() {
-        return this;
     }
 
     @Override
@@ -125,11 +128,11 @@ public class Elevator extends SubsystemIF {
     }
 
     @Override
-    public void onTeleopInit() {
+    public SubsystemIF initialize() {
         Commands.waitUntil(RobotState::isEnabled)
-                .andThen(Commands.runOnce(() -> {
-                    setElevatorHeight(ELEVATOR_LOW_POSE);
-                }))
+                .andThen(new ElevatorZeroCommand())
                 .ignoringDisable(true).schedule();
+
+        return this;
     }
 }
